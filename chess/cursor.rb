@@ -31,12 +31,14 @@ MOVES = {
 }
 
 class Cursor
-
-  attr_reader :cursor_pos, :board
+  # needs a selected boolean instance variable
+  attr_reader :board
+  attr_accessor :cursor_pos, :selected
 
   def initialize(cursor_pos, board)
     @cursor_pos = cursor_pos
     @board = board
+    @selected = false
   end
 
   def get_input
@@ -78,20 +80,26 @@ class Cursor
   def handle_key(key)
     case key
     when :return, :space
-      @cursor_pos
+      # self.selected = selected == true ? false : true
+      self.selected = true
     when :left, :right, :up, :down
       update_pos(MOVES[key])
       nil
     when :ctrl_c
-      Process.exit(0)
+      exit(0)
     end
   end
 
   def update_pos(diff)
+    #update local variable to check logic
+    new_cursor_pos = cursor_pos.dup
+
     (0..1).each do |idx|
-      cursor_pos[idx] += diff[idx]
+      new_cursor_pos[idx] += diff[idx]
     end
 
-    cursor_pos
+    self.cursor_pos = new_cursor_pos if board.in_bounds?(new_cursor_pos)
   end
+
+
 end
